@@ -5,7 +5,7 @@
       "name": "Shoyu Ramen",
       "restaurant": "Nonono",
       "image": "./assets/ramen/shoyu.jpg",
-      "rating": 7,
+      "rating": 8,
       "comment": "Delish. Can't go wrong with a classic!"
     },
     {
@@ -21,7 +21,7 @@
       "name": "Nirvana Shiromaru",
       "restaurant": "Ippudo",
       "image": "./assets/ramen/nirvana.jpg",
-      "rating": "7",
+      "rating": 7,
       "comment": "Do buy the hype."
     },
     {
@@ -44,8 +44,8 @@
       "name": "Asian Beef",
       "restaurant": "Ramen House",
       "image": "https://www.thespruceeats.com/thmb/T7dcKEriP_BfPXIfPEdYF3j98II=/1999x1124/smart/filters:no_upscale()/GettyImages-174947093-13afc2cc6bb14d2982701e95ddfe4689.jpg",
-      "rating": "9",
-      "comment": "Maybe the best ramen I've ever had!",
+      "rating": 10,
+      "comment": "The best ramen in Houston!",
       "id": 6
     }
   ]

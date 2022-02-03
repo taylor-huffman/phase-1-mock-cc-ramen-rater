@@ -8,43 +8,67 @@ document.addEventListener('DOMContentLoaded', () => {
     let ramenRestaurant = document.querySelector('#ramen-detail h3')
     let ramenRating = document.getElementById('rating-display')
     let ramenComment = document.getElementById('comment-display')
-    let form = document.getElementById('new-ramen')
+    let newRamenForm = document.getElementById('new-ramen')
+    let editRamenForm = document.getElementById('edit-ramen')
 
-    fetch(ramenUrl)
+    const fetchMenuItems = () => {fetch(ramenUrl)
     .then(res => res.json())
     .then(data => {
+        showInitialDetails(data[0])
         data.forEach(item => {
-            console.log(item)
             createMenuItem(item)
         });
-    })
+    })}
+    fetchMenuItems()
 
     const createMenuItem = (item) => {
         let img = document.createElement('img')
+        let deleteButton = document.createElement('button')
+        let menuItemContainer = document.createElement('div')
+        deleteButton.textContent = 'X'
+        deleteButton.addEventListener('click', (e) => removeMenuItem(e, item))
+        deleteButton.classList.add('delete-btn')
         img.src = item.image
+        menuItemContainer.dataset.ramenId = item.id
+        menuItemContainer.classList.add('menu-item-container')
         img.addEventListener('click', (e) => showRamenDetails(e, item))
-        ramenMenu.appendChild(img)
+        menuItemContainer.append(img, deleteButton)
+        ramenMenu.appendChild(menuItemContainer)
     }
 
     const showRamenDetails = (e, item) => {
         console.log(e)
-        console.log(item)
         ramenImg.src = item.image
         ramenImg.alt = `${item.name} Image`
         ramenName.textContent = item.name
         ramenRestaurant.textContent = item.restaurant
         ramenRating.textContent = item.rating
         ramenComment.textContent = item.comment
+        editRamenForm.rating.value = item.rating
+        editRamenForm.edit_comment.value = item.comment
+        editRamenForm.dataset.currentId = item.id
+    }
+
+    const showInitialDetails = (item) => {
+        ramenImg.src = item.image
+        ramenImg.alt = `${item.name} Image`
+        ramenName.textContent = item.name
+        ramenRestaurant.textContent = item.restaurant
+        ramenRating.textContent = item.rating
+        ramenComment.textContent = item.comment
+        editRamenForm.rating.value = item.rating
+        editRamenForm.edit_comment.value = item.comment
+        editRamenForm.dataset.currentId = item.id
     }
 
     const submitNewRamen = (e) => {
         e.preventDefault()
         let newRamenObj = {
-            name: form.name.value,
-            restaurant: form.restaurant.value,
-            image: form.image.value,
-            rating: form.rating.value,
-            comment: form.new_comment.value
+            name: newRamenForm.name.value,
+            restaurant: newRamenForm.restaurant.value,
+            image: newRamenForm.image.value,
+            rating: parseInt(newRamenForm.rating.value),
+            comment: newRamenForm.new_comment.value
         }
         fetch(ramenUrl, {
             method: 'POST',
@@ -55,8 +79,48 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .then(res => res.json())
         .then(() => createMenuItem(newRamenObj))
-        form.reset()
+        newRamenForm.reset()
     }
 
-    form.addEventListener('submit', (e) => submitNewRamen(e))
+    const editRamen = (e) => {
+        e.preventDefault()
+        let currentId = editRamenForm.dataset.currentId
+        fetch(`${ramenUrl}/${currentId}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify({
+                rating: parseInt(editRamenForm.rating.value),
+                comment: editRamenForm.edit_comment.value
+            })
+        })
+        .then(res => res.json())
+        .then(() => updateFrontEnd())
+    }
+
+    const updateFrontEnd = () => {
+        ramenRating.textContent = editRamenForm.rating.value
+        ramenComment.textContent = editRamenForm.edit_comment.value
+    }
+
+    const removeMenuItem = (e, item) => {
+        console.log(e)
+        console.log(item)
+        if (confirm('Are you sure you want to delete this item?')) {
+        fetch(`${ramenUrl}/${item.id}`, {
+            method: 'DELETE',
+            headers: {
+                'Conent-Type': 'application/json'
+            }
+        })
+        .then(res => res.json())
+        .then(() => {
+            e.target.parentNode.remove()
+        })
+    } 
+}
+
+    editRamenForm.addEventListener('submit', (e) => editRamen(e))
+    newRamenForm.addEventListener('submit', (e) => submitNewRamen(e))
 })
